@@ -7,6 +7,7 @@ def assign_value(values, box, value):
     """
     values[box] = value
     if len(value) == 1:
+        print(value)
         assignments.append(values.copy())
     return values
 
@@ -24,7 +25,7 @@ def naked_twins(values):
 
 def cross(A, B):
     "Cross product of elements in A and elements in B."
-    pass
+    return [s+t for s in A for t in B]
 
 def grid_values(grid):
     """
@@ -36,7 +37,12 @@ def grid_values(grid):
             Keys: The boxes, e.g., 'A1'
             Values: The value in each box, e.g., '8'. If the box has no value, then the value will be '123456789'.
     """
-    pass
+
+    grid = dict(zip(cross('ABCDEFGHI', '123456789'), grid))
+    for key,values in zip(grid.keys(), grid.values()):
+        if values == '.':
+           grid[key] = '123456789'
+    return grid
 
 def display(values):
     """
@@ -44,7 +50,14 @@ def display(values):
     Args:
         values(dict): The sudoku in dictionary form
     """
-    pass
+    boxes = cross('ABCDEFGHI', '123456789')
+    width = 1+max(len(values[s]) for s in boxes)
+    line = '+'.join(['-'*(width*3)]*3)
+    for r in 'ABCDEFGHI':
+        print(''.join(values[r+c].center(width)+('|' if c in '36' else '')
+                      for c in '123456789'))
+        if r in 'CF': print(line)
+    return
 
 def eliminate(values):
     pass
@@ -67,6 +80,12 @@ def solve(grid):
     Returns:
         The dictionary representation of the final sudoku grid. False if no solution exists.
     """
+    values = grid_values(grid)
+    #eliminazione
+    for key in values.keys():
+        if len(values[key]) == 1:
+            assign_value(values, key, values[key])
+    return values
 
 if __name__ == '__main__':
     diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
