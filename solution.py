@@ -5,6 +5,7 @@ cols = '123456789'
 row_units = []
 column_units = []
 square_units = []
+diagonal_units = []
 units = {}
 unitlist = []
 peers = {}
@@ -31,28 +32,16 @@ def naked_twins(values):
     """
     for u in unitlist:
         # Find all instances of naked twins
-        possible_twins_b = [ box for box in u if len(values[box]) == 2]
-        possible_twins_v = [ values[box] for box in u if len(values[box]) == 2]
-        
-        twins = {}
+        possible_twins = [ [box,values[box]] for box in u if len(values[box]) == 2]
+        d = dict(possible_twins)
+        twins = [ box for box, value in d.items() if list(d.values()).count(value) == 2]
 
-        for t in zip(possible_twins_b,possible_twins_v):
-            if(possible_twins_v.count(t[1]) == 2): 
-                if t[1] in twins: twins[t[1]].append(t[0])
-                else: twins[t[1]] = [t[0]]
-        print(twins)
-        
-        # Eliminate the naked twins as possibilities for their peers    
-        print(u)
-        print("=============================")
-        for t in twins.keys():
-            print(twins[t])
-            print("------------------")
-            for b in u: 
-                if(b not in t[1]):
-                    print(b)
-        print("+++++++++++++++++++++++++++++++")
-    
+        # Eliminate the naked twins as possibilities for their peers
+        for t in twins:
+            other_twin = [ box for box in u if values[box] != values[t] ]
+            for o in other_twin:
+                values[o] = ''.join([x for x in values[o] if x not in values[t]])
+
     return values
 
 def cross(A, B):
@@ -134,7 +123,7 @@ def search(values):
     poss = [ box for box in values.keys() if len(values[box]) == 1]
     if(len(poss) == 81):
         return values
-    
+
     # Choose one of the unfilled squares with the fewest possibilities
     poss = [ [box,len(values[box])] for box in values.keys() if len(values[box]) > 1]
     poss_s = sorted(poss, key=lambda poss: poss[1])
@@ -158,17 +147,18 @@ def solve(grid):
         The dictionary representation of the final sudoku grid. False if no solution exists.
     """
     global row_units, column_units, square_units, unitlist, units, peers
-    
+
     values = grid_values(grid)
-    
+
     row_units = [cross(r, cols) for r in rows]
     column_units = [cross(rows, c) for c in cols]
     square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
-    unitlist = row_units + column_units + square_units
+    diagonal_units = [['A1', 'B2', 'C3', 'D4', 'E5', 'F6', 'G7', 'H8', 'I9'], ['I1', 'H2', 'G3', 'F4', 'E5', 'D6', 'C7', 'B8', 'A9']]
+    unitlist = row_units + column_units + square_units + diagonal_units
     units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
     peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
     values = search(values)
-    
+
     return values
 
 if __name__ == '__main__':
