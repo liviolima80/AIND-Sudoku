@@ -3,17 +3,17 @@
 
 # Question 1 (Naked Twins)
 Q: How do we use constraint propagation to solve the naked twins problem?  
-A: *Student should provide answer here*
+A: Since the naked twins method introduce a constraint that helps to reduce the possibility space of sudoku board, it has to be used in the constraint propagation chain together with the elimination and only choice strategies. I add the call of naked_twins function in reduce_puzzle function after eliminate and only_choice.
 
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?  
-A: *Student should provide answer here*
+A: We have to add two extra units given by the boxes that belong to the two diagonals and update the set of peers in such a way that the boxes that belong to the diagonals have as peers boxes in the same row, column, 3x3 box and diagonal. The constraint propagation strategy remains the same of normal sudoku.
 
 ### Install
 
 This project requires **Python 3**.
 
-We recommend students install [Anaconda](https://www.continuum.io/downloads), a pre-packaged Python distribution that contains all of the necessary libraries and software for this project. 
+We recommend students install [Anaconda](https://www.continuum.io/downloads), a pre-packaged Python distribution that contains all of the necessary libraries and software for this project.
 Please try using the environment we provided in the Anaconda lesson of the Nanodegree.
 
 ##### Optional: Pygame
